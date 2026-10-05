@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{ mailing.message.subject }}</h1>
+
+<p>Начало: {{ mailing.start_time }}</p>
+<p>Окончание: {{ mailing.end_time }}</p>
+<p>Статус: {{ mailing.get_status_display }}</p>
+<p>Получателей: {{ mailing.recipients.count }}</p>
+
+<form
+    method="post"
+    action="{% url 'mailing:mailing_send' mailing.pk %}"
+>
+    {% csrf_token %}
+    <button type="submit">
+        Запустить рассылку
+    </button>
+</form>
+
+<h2>История попыток</h2>
+
+{% for attempt in mailing.attempts.all %}
+    <p>
+        {{ attempt.attempt_time }} —
+        {{ attempt.recipient.email }} —
+        {{ attempt.get_status_display }} —
+        {{ attempt.server_response }}
+    </p>
+{% empty %}
+    <p>Попыток отправки ещё не было.</p>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Подтверждение удаления</h2>
+
+    <p>
+        Вы действительно хотите удалить объект:
+        <strong>{{ object }}</strong>?
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <button type="submit">
+            Да, удалить
+        </button>
+    </form>
+
+    <p>
+        <a href="javascript:history.back()">
+            Отмена
+        </a>
+    </p>
+{% endblock %}

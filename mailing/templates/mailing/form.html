@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Форма получателя</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit">
+            Сохранить
+        </button>
+    </form>
+
+    <p>
+        <a href="{% url 'mailing:recipient_list' %}">
+            Вернуться к списку получателей
+        </a>
+    </p>
+{% endblock %}

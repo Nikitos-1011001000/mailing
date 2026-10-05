@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Сервис рассылок</title>
+</head>
+<body>
+    <header>
+        <h1>Сервис рассылок</h1>
+
+        <nav>
+            <a href="{% url 'mailing:home' %}">
+                Главная
+            </a>
+
+            <a href="{% url 'mailing:recipient_list' %}">
+                Получатели
+            </a>
+
+            <a href="{% url 'mailing:message_list' %}">
+                Сообщения
+            </a>
+
+            <a href="{% url 'mailing:mailing_list' %}">
+                Рассылки
+            </a>
+        </nav>
+
+        <hr>
+    </header>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+</body>
+</html>

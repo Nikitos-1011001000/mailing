@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Сервис рассылок</h1>
+
+<div class="row">
+    <div class="col">
+        <h3>{{ mailings_count }}</h3>
+        <p>Всего рассылок</p>
+    </div>
+
+    <div class="col">
+        <h3>{{ active_mailings_count }}</h3>
+        <p>Активных рассылок</p>
+    </div>
+
+    <div class="col">
+        <h3>{{ recipients_count }}</h3>
+        <p>Уникальных получателей</p>
+    </div>
+</div>
+{% endblock %}
