@@ -1,5 +1,5 @@
 from django.urls import path
-
+from .views import PublicAboutView
 from mailing import views
 
 app_name = 'mailing'
@@ -79,4 +79,26 @@ urlpatterns = [
         views.MailingSendView.as_view(),
         name='mailing_send',
     ),
+    path(
+        'stats/',
+        views.user_stats,
+        name='user_stats',
+    ),
+    path(
+        'users/',
+        views.UserListView.as_view(),
+        name='user_list',
+    ),
+    path(
+        'users/<int:pk>/block/',
+        views.UserBlockView.as_view(),
+        name='user_block',
+    ),
+    path(
+        'mailing/<int:pk>/toggle-active/',
+        views.MailingToggleActiveView.as_view(),
+        name='mailing_toggle_active',
+    ),
+    path('about/', PublicAboutView.as_view(), name='about'),
+    path('', views.UserListView.as_view(), name='user-list'),
 ]

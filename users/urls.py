@@ -2,7 +2,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import path
 
 from users.apps import UsersConfig
-from users import views
+from . import views
 
 
 app_name = 'users'

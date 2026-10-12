@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Моя статистика</h2>
+
+    <p>
+        <strong>Успешно отправлено писем:</strong>
+        {{ total_sent }}
+    </p>
+
+    <p>
+        <strong>Неуспешных попыток:</strong>
+        {{ total_failed }}
+    </p>
+{% endblock %}

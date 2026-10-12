@@ -9,10 +9,11 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.utils.encoding import force_str
+from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-
+from django.views.generic import ListView, View
 from users.forms import RegisterForm
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 
 def register(request):
@@ -36,7 +37,7 @@ def register(request):
                     'user': user,
                     'domain': current_site.domain,
                     'uid': urlsafe_base64_encode(
-                        force_str(user.pk).encode()
+                        force_bytes(user.pk)
                     ),
                     'token': default_token_generator.make_token(user),
                 },
@@ -89,4 +90,72 @@ def activate(request, uidb64, token):
         status=400,
     )
 
-# Create your views here.
+class UserListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = User
+    template_name = 'mailing/user_list.html'
+    context_object_name = 'users'
+
+    def test_func(self):
+        return is_manager(self.request.user)
+
+class UserBlockView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return is_manager(self.request.user)
+
+    def post(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+
+        if user.is_superuser:
+            messages.error(
+                request,
+                'Суперпользователя нельзя заблокировать.'
+            )
+        else:
+            user.is_active = not user.is_active
+            user.save(
+                update_fields=['is_active'],
+            )
+
+            if user.is_active:
+                messages.success(
+                    request,
+                    f'Пользователь {user.username} разблокирован.'
+                )
+            else:
+                messages.success(
+                    request,
+                    f'Пользователь {user.username} заблокирован.'
+                )
+
+        return redirect('mailing:user_list')
+
+class MailingToggleActiveView(
+    LoginRequiredMixin,
+    UserPassesTestMixin,
+    View,
+):
+    def test_func(self):
+        return is_manager(self.request.user)
+
+    def post(self, request, pk):
+        mailing = get_object_or_404(Mailing, pk=pk)
+
+        mailing.is_active = not mailing.is_active
+        mailing.save(
+            update_fields=['is_active'],
+        )
+
+        if mailing.is_active:
+            messages.success(
+                request,
+                'Рассылка включена.'
+            )
+        else:
+            messages.success(
+                request,
+                'Рассылка отключена.'
+            )
+
+        return redirect('mailing:mailing_detail', pk=mailing.pk)
+
+
