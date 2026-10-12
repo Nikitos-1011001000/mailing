@@ -1,9 +1,20 @@
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
+from django.core.mail import send_mail
+from django.conf import settings
+
+User = get_user_model()
 
 
 class Recipient(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='recipients',
+        verbose_name='Владелец',
+    )
     email = models.EmailField(
         unique=True,
         verbose_name='Email',
@@ -27,6 +38,12 @@ class Recipient(models.Model):
 
 
 class Message(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='messages',
+        verbose_name='Владелец',
+    )
     subject = models.CharField(
         max_length=255,
         verbose_name='Тема письма',
@@ -128,6 +145,28 @@ class Mailing(models.Model):
 
         return self.status
 
+    sent_count = models.PositiveIntegerField(
+        'Отправлено',
+        default=0,
+        editable=False,
+    )
+    failed_count = models.PositiveIntegerField(
+        'Ошибок',
+        default=0,
+        editable=False,
+    )
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='mailings',
+        verbose_name='Владелец',
+    )
+
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name='Активна',
+    )
 
 class MailingAttempt(models.Model):
     STATUS_SUCCESS = 'success'
